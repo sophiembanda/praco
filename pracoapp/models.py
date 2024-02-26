@@ -23,6 +23,46 @@ class HairdresserProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+class vendor_profiles (models.Model):
+  user_id=models.ForeignKey(User,on_delete=models.CASCADE)
+  shop_name=models.CharField
+  shop_description=models.TextField
+  # shop_logo varchar
+  address=models.CharField(max_length=255)
+  phone_number= models.CharField(max_length=255)
+  # website varchar
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+class payment_method (models.Model):
+  user_id=models.ForeignKey(User,on_delete=models.CASCADE)
+  payment_type=models.CharField(max_length=20,choices=[('Mpesa', 'Mpesa'), ('PayPal', 'PayPal'), ('Bank transfer', 'Bank transfer')])
+  # // PayPal
+  # // Mpesa
+  details=models.CharField
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now_add=True)
+
+class products (models.Model):
+  vendor_profile_id=models.ForeignKey(vendor_profiles,on_delete=models.CASCADE)
+  name=models.CharField(max_length=100)
+  description=models.TextField
+  price=models.CharField(max_length=100)
+  quantity_available=models.CharField(max_lengh=100)
+  # // also stock
+  # // PositiveIntegerField
+  # image varchar
+  created_at= models.DateTimeField(auto_now_add=True)
+  updated_at=models.DateTimeField(auto_now=True)
+
+class categories (models.Model):
+  product_id=models.ForeignKey(products,on_delete=models.CASCADE)
+  name=models.CharField(max_length=100)
+  description=models.TextField
+  # image varchar
+  created_at= models.DateTimeField(auto_now_add=True)
+  updated_at= models.DateTimeField(auto_now=True)
+
 class Service(models.Model):
     hairdresser_profile = models.ForeignKey(HairdresserProfile, on_delete=models.CASCADE, related_name='services')
     name = models.CharField(max_length=100)
@@ -50,3 +90,66 @@ class Cancellation(models.Model):
     refund_status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('completed', 'Completed'), ('failed', 'Failed')])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+class reviews (models.Model):
+  user_id=models.ForeignKey(UserProfile, on_delete=models.CASCADE) 
+  hairdresser_id=models.ForeignKey(HairdresserProfile, on_delete=models.CASCADE)
+  service_id=models.ForeignKey(Service, on_delete=models.CASCADE)
+ # rating=models.IntegerField
+  review_text=models.TextField
+  created_at=models.DateTimeField(auto_now_add=True)
+  updated_at=models.DateTimeField(auto_now=True)
+
+#   class posts(models.Model):
+#   author_id int [ref: > users.id]
+#   content  varchar
+#   image_url varchar
+#   video_url varchar
+#   video_length varchar
+#   is_booking boolean
+#   is_purchasing boolean
+#   // DurationField
+#   created_at timestamp
+#   updated_at timestamp
+  
+class payment(models.Model):
+  amount=models.IntegerField
+  payment_method=models.CharField(max_length=20,choices=[('Mpesa', 'Mpesa'), ('PayPal', 'PayPal'), ('Bank transfer', 'Bank transfer')])
+#Mpesa, PayPal, bank transfer
+  transaction_id=models.CharField
+#"TXN123456789"
+  status=status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('confirmed', 'Confirmed')])
+ #pending, confirmed, cancelleed
+  created_at=models.DateTimeField(auto_now_add=True)
+  updated_at=models.DateTimeField(auto_now=True)
+
+class products(models.Model):
+  vendor_profile_id=models.ForeignKey(vendor_profile,on_delete=CASCADE)
+  name=models.CharField
+  description=models.TextField
+  price=models.CharField(max_length=100)
+  quantity_available=models.CharField(max_length=100)
+  # // also stock
+  # // PositiveIntegerField
+  # image varchar
+  created_at=models.DateTimeField(auto_now_add=True)
+  updated_at=models.DateTimeField(auto_now=True)
+
+class orderItems(models.Model):
+  product_id=models.ForeignKey(products, on_delete=models.CASCADE) 
+  quantity=models.CharField(max_length=100)
+  item_price=models.CharField(max_length=100)
+  # accessing all products in an order
+  # It is an association proxy for a MANY TO MANY FIELD 
+  # total_price varchar
+  created_at=models.DateTimeField(auto_now_add=True)
+  updated_at=models.DateTimeField(auto_now=True)
+
+class transaction(models.Model):
+  order_id=models.ForeignKey(orderItems, on_delete=models.CASCADE) 
+  payment_method_id=models.ForeignKey(payment, on_delete=models.CASCADE) 
+  status=models.CharField(max_length=20, choices=[('pending', 'Pending'), ('confirmed', 'Confirmed')])
+  amount=models.CharField(max_length=100)
+  created_at=models.DateTimeField(auto_now_add=True)
+  updated_at=models.DateTimeField(auto_now=True)
+
