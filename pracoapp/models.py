@@ -1,3 +1,4 @@
+from tkinter import CASCADE
 from django.db import models
 
 # Create your models here.
@@ -43,16 +44,16 @@ class payment_method (models.Model):
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now_add=True)
 
-class products (models.Model):
-  vendor_profile_id=models.ForeignKey(vendor_profiles,on_delete=models.CASCADE)
-  name=models.CharField(max_length=100)
+class products(models.Model):
+  vendor_profiles_id=models.ForeignKey(vendor_profiles,on_delete=models.CASCADE)
+  name=models.CharField
   description=models.TextField
   price=models.CharField(max_length=100)
-  quantity_available=models.CharField(max_lengh=100)
+  quantity_available=models.CharField(max_length=100)
   # // also stock
   # // PositiveIntegerField
   # image varchar
-  created_at= models.DateTimeField(auto_now_add=True)
+  created_at=models.DateTimeField(auto_now_add=True)
   updated_at=models.DateTimeField(auto_now=True)
 
 class categories (models.Model):
@@ -60,6 +61,19 @@ class categories (models.Model):
   name=models.CharField(max_length=100)
   description=models.TextField
   # image varchar
+  created_at= models.DateTimeField(auto_now_add=True)
+  updated_at= models.DateTimeField(auto_now=True)
+
+class cart (models.Model):
+  user_id=models.ForeignKey(User,on_delete=models.CASCADE)
+  # // oneToOne relationship
+  created_at= models.DateTimeField(auto_now_add=True)
+  updated_at= models.DateTimeField(auto_now=True)
+
+class cartItem(models.Model):
+  cart_id=models.ForeignKey(cart, on_delete=models.CASCADE)
+  product_id=models.ForeignKey(products,on_delete=models.CASCADE)
+  quantity=models.CharField(max_length=100)
   created_at= models.DateTimeField(auto_now_add=True)
   updated_at= models.DateTimeField(auto_now=True)
 
@@ -114,24 +128,12 @@ class reviews (models.Model):
   
 class payment(models.Model):
   amount=models.IntegerField
-  payment_method=models.CharField(max_length=20,choices=[('Mpesa', 'Mpesa'), ('PayPal', 'PayPal'), ('Bank transfer', 'Bank transfer')])
+  payment_method=models.CharField(max_length=20,choices=[('Mpesa', 'Mpesa'), ('PayPal', 'PayPal'), ('Bank transfer', 'Bank transfer')], default='Mpesa')
 #Mpesa, PayPal, bank transfer
-  transaction_id=models.CharField
+  transaction_id=models.CharField(max_length=255)
 #"TXN123456789"
   status=status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('confirmed', 'Confirmed')])
  #pending, confirmed, cancelleed
-  created_at=models.DateTimeField(auto_now_add=True)
-  updated_at=models.DateTimeField(auto_now=True)
-
-class products(models.Model):
-  vendor_profile_id=models.ForeignKey(vendor_profile,on_delete=CASCADE)
-  name=models.CharField
-  description=models.TextField
-  price=models.CharField(max_length=100)
-  quantity_available=models.CharField(max_length=100)
-  # // also stock
-  # // PositiveIntegerField
-  # image varchar
   created_at=models.DateTimeField(auto_now_add=True)
   updated_at=models.DateTimeField(auto_now=True)
 
